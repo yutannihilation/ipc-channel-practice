@@ -1,7 +1,16 @@
-use ipc_channel::ipc::IpcSender;
+use ipc_channel::ipc::{IpcOneShotServer, IpcSender};
+use ipc_channel_practice::Payload;
 
 fn main() {
-    let server_name = std::env::args().nth(1).unwrap();
-    let tx: IpcSender<Vec<u8>> = IpcSender::connect(server_name).unwrap();
-    tx.send(vec![0x10, 0x11, 0x12, 0x13]).unwrap();
+    let tx_server_name = std::env::args().nth(1).unwrap();
+
+    println!("connecting to server");
+    let tx: IpcSender<Payload> = IpcSender::connect(tx_server_name).unwrap();
+
+    // create a connection of opposite direction
+    let (rx, rx_server_name) = IpcOneShotServer::<Payload>::new().unwrap();
+    tx.send(Payload::Connect(rx_server_name)).unwrap();
+
+    let (_, data) = rx.accept().unwrap();
+    println!("{data:?}");
 }

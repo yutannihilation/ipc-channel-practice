@@ -107,6 +107,7 @@ name = "ipc-channel-practice"
 version = "0.1.0"
 dependencies = [
  "ipc-channel",
+ "serde",
 ]
 
 [[package]]

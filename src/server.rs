@@ -1,9 +1,20 @@
-use ipc_channel::ipc::IpcOneShotServer;
+use ipc_channel::ipc::{IpcOneShotServer, IpcSender};
+use ipc_channel_practice::Payload;
 
 fn main() {
-    let (server, server_name) = IpcOneShotServer::new().unwrap();
-    println!("{server_name}");
+    let (rx, rx_server_name) = IpcOneShotServer::<Payload>::new().unwrap();
+    println!("{rx_server_name}");
 
-    let (_, data): (_, Vec<u8>) = server.accept().unwrap();
-    println!("{data:?}")
+    let (_, data) = rx.accept().unwrap();
+
+    let tx: IpcSender<Payload> = match data {
+        Payload::Connect(tx_server_name) => {
+            println!("connecting to client");
+            IpcSender::connect(tx_server_name).unwrap()
+        }
+        Payload::Message(_) => panic!("Why I got a message?"),
+    };
+
+    tx.send(Payload::Message("カラテが高まる".to_string()))
+        .unwrap();
 }
