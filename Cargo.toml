@@ -1,0 +1,15 @@
+[package]
+name = "ipc-channel-practice"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ipc-channel = "0.18.3"
+
+[[bin]]
+name = "server"
+path = "src/server.rs"
+
+[[bin]]
+name = "client"
+path = "src/client.rs"
